@@ -18,6 +18,17 @@ void push(int v, int vl, int vr){
     }
 }
 
+void build(int v, int vl, int vr) {
+    if (vl == vr) {
+        t[v] = a[vl];
+        return;
+    }
+    int vm = (vl + vr) / 2;
+    
+    build(2 * v, vl, vm);
+    build(2 * v + 1, vm + 1, vr);
+    t[v] = t[2 * v] + t[2 * v + 1];
+}
 
 void update(int v, int vl, int vr, int l, int r, int x){
     if (vl > r || vr < l) return;
