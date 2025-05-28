@@ -1,30 +1,31 @@
-function root = bisectionMethod(f, a, b, tol, max_iter)
-    % Finds a root of f(x) = 0 using the Bisection Method
-    % Inputs:
-    %   f         - function handle
-    %   a, b      - interval endpoints
-    %   tol       - tolerance (stopping condition)
-    %   max_iter  - maximum number of iterations
-    % Output:
-    %   root      - approximate root of f
-    
+function root = bisectionFixedStyle(f, a, b, tolx, tolf, maxit)
+    %    This function uses bolzano's theorem
+
     if f(a) * f(b) > 0
-        error('f(a) and f(b) must have opposite signs');
+        error("The function needs to change sign at [a, b]");
     end
+    
+    l = abs(a - b);
+    n = 1;
+    x = a;  % x1 = a
 
-    for k = 1:max_iter
-        c = (a + b) / 2;
-        if abs(f(c)) < tol || (b - a) / 2 < tol
-            root = c;
-            return;
-        end
+    while (n < maxit && l > tolx)
+        x_new = 0.5 * (a + b);
 
-        if f(a) * f(c) < 0
-            b = c;
+        if abs(f(x_new)) < tolf
+            l = 0;  % Root is good enough, stop
         else
-            a = c;
+            if f(a) * f(x_new) < 0
+                b = x_new;
+            else
+                a = x_new;
+            end
+            l = abs(x_new - x);  % Update step size
         end
+
+        x = x_new;
+        n = n + 1;
     end
 
-    root = (a + b) / 2;  % Final approximation after max_iter
+    root = x;  % Final approximation
 end
