@@ -1,5 +1,5 @@
 
-# My LaTeX‑Enhanced Project
+# Dinamic Programming Techniques
 
 A demo of using LaTeX math in a GitHub README.
 
