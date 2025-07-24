@@ -1,25 +1,34 @@
 # Dynamic Programming Techniques
 
-Here I am going to share some non-trivials techniques (at least for me) that I happen to like.
+In this note, I will share some non-trivial dynamic programming techniques that I find useful.
 
 ---
 
 ## 1. Open & Close Interval Trick
 
-https://cses.fi/problemset/task/1665
+**Problem**: https://cses.fi/problemset/task/1665
 
-Your company has n coders, and each of them has a skill level between $0$ and $100$. Your task is to divide the coders into teams that work together.
+Your company has \(n\) coders, each with a skill level between 0 and 100. You need to divide the coders into teams so that the sum of penalties is at most \(x\). A team’s penalty is defined as the difference between the highest and lowest skill levels within that team.
 
-Based on your experience, you know that teams work well when the skill levels of the coders are about the same. For this reason, the penalty for creating a team is the skill level difference between the best and the worst coder.
+**Key idea**: Since only the minimum and maximum skills in each team matter, sort the skill levels in non-decreasing order.
 
-In how many ways can you divide the coders into teams such that the sum of the penalties is at most x?
+Define \(dp[i][j][k]\) as the number of ways to form teams from the first \(i\) coders, with \(j\) “unfinished” teams (teams that have a minimum but no maximum yet), and a net penalty of \(k\). When coder \(l\) starts a team, we subtract \(t_l\) from the penalty; when coder \(r\) closes a team, we add \(t_r\).
 
-The first thing to notice is that for each team we only care about the minimum and the maximum skill level, to make computing easier, sort the array in non-decreasing order. Let $dp[i][j][k]$ The number of ways we can form teams from the first $i$ people such that there are $j$ "unfinished" teams and the total penalty so far is $k$. If the $l$-th person has the lowest skill in the team then its contribution will be $-t_l$. If the $r$-th person is the one to close a team, then its contrubution will be $t_r$.
+To transition from coder \(i-1\) to coder \(i\), consider four cases:
 
-We now consider 4 cases to transition from $i-1$ to i:
-- The $i$-th programmer is left alone, contributing $0$ to the total penalty, $dp[i][j][l] += dp[i - 1][j][k]$.
-- The $i$-th programmer is appended to an unfinished team, this contributes $0$ to the total penalty, but since there are $j$ unfinished team there are $j$ spots availiable, $dp[i][j][l] += j * dp[i - 1][j][k]$.
--
--
+1. **Coder \(i\) works alone**: contributes 0 to the penalty.  
+   \[ dp[i][j][k] += dp[i-1][j][k] \]
 
+2. **Coder \(i\) joins an unfinished team**: contributes 0 to the penalty, but there are \(j\) unfinished teams to choose from.  
+   \[ dp[i][j][k] += j \times dp[i-1][j][k] \]
+
+3. **Coder \(i\) closes a team**: contributes \(+t_i\) to the penalty, and reduces the count of unfinished teams by 1. There are \(j\) unfinished teams.  
+   \[ dp[i][j-1][k + t_i] += j \times dp[i-1][j][k] \]
+
+4. **Coder \(i\) opens a new team**: contributes \(-t_i\) to the penalty, increasing unfinished teams by 1.  
+   \[ dp[i][j+1][k - t_i] += dp[i-1][j][k] \]
+
+**Implementation notes**:
+- Since penalties can be negative in our DP formulation, shift the penalty index by an offset when implementing, so that it always stays non-negative.
+- To save memory, avoid allocating a full 3D array of size \(n \times n \times X\). Instead, use rolling arrays or hash maps.
 
